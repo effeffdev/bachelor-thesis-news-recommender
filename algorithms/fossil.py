@@ -239,3 +239,10 @@ class Fossil:
         scores = self.score_item(session_id=None, past_items=self.session)
 
         return pd.Series(data=scores, index=self.item_list)
+
+    def predict_session(self, session_items: List[int]) -> pd.Series:
+        item_indices = list(map(lambda item: self.item_map[item], session_items))
+
+        scores = self.score_item(session_id=None, past_items=item_indices)
+
+        return pd.Series(data=scores, index=self.item_list)

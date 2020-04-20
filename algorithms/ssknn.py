@@ -86,6 +86,18 @@ class SSKNN:
         predictions[mask] = values
         return pd.Series(data=predictions, index=items_to_score)
 
+    def predict_session(self, session_items: List[int], items_to_score: List[int]):
+        neighbors_with_similarity = self.get_neighbors_for_session(set(session_items))
+        scores = self.score_items(neighbors_with_similarity, session_items)
+
+        predictions = np.zeros(len(items_to_score))
+        mask = np.isin(items_to_score, list(scores.keys()))
+
+        scored_items = items_to_score[mask]
+        values = [scores[x] for x in scored_items]
+        predictions[mask] = values
+        return pd.Series(data=predictions, index=items_to_score)
+
     def get_neighbors(self, items, last_item_id):
         # get neighbor candidates
         sessions_for_item = self.item_to_sessions.get(last_item_id)
@@ -110,6 +122,43 @@ class SSKNN:
 
             else:
                 neighbor_candidates = self.considered_sessions
+
+        # calculate similarity
+        neighbors_with_similarity = []
+        cnt = 0
+        for neighbor in neighbor_candidates:
+            cnt = cnt + 1
+            neighbor_items = self.session_to_items.get(neighbor)
+
+            sim = self.cosine(neighbor_items, items)
+            if sim > 0:
+                neighbors_with_similarity.append((neighbor, sim))
+
+        sorted_neighbors = sorted(neighbors_with_similarity, reverse=True, key=lambda x: x[1])
+
+        return sorted_neighbors[:self.k]
+
+    def get_neighbors_for_session(self, items):
+        # get neighbor candidates
+        item_sets = list(map(lambda x: set() if x is None else x, [self.item_to_sessions.get(item_id) for item_id in items]))
+        sessions_to_consider = set.union(*item_sets)
+
+        neighbor_candidates = set()
+        if self.sample_size == 0:
+            neighbor_candidates = sessions_to_consider
+
+        else:
+            if len(sessions_to_consider) > self.sample_size:
+                sorted_sessions = sorted(sessions_to_consider, reverse=True)
+                cnt = 0
+                for session in sorted_sessions:
+                    cnt = cnt + 1
+                    if cnt > self.sample_size:
+                        break
+                    neighbor_candidates.add(session)
+
+            else:
+                neighbor_candidates = sessions_to_consider
 
         # calculate similarity
         neighbors_with_similarity = []
