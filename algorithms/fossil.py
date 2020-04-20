@@ -86,7 +86,7 @@ class Fossil:
 
             if last_session != session:
                 if last_session > 0:
-                    session_start_count = self.session_map[last_session]  # TODO: is this right?
+                    session_start_count = self.session_map[last_session]
                     self.sessions[session_start_count, :] = [cursor, len(session_list)]
                     self.items[cursor:cursor + len(session_list)] = session_list
                     cursor += len(session_list)
@@ -96,7 +96,7 @@ class Fossil:
             last_session = session
             session_list.append(self.item_map[item])
 
-        session_start_count = self.session_map[last_session]  # TODO: is this right?
+        session_start_count = self.session_map[last_session]
         self.sessions[session_start_count, :] = [cursor, len(session_list)]
         self.items[cursor:cursor + len(session_list)] = session_list
         cursor += len(session_list)

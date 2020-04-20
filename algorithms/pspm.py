@@ -119,7 +119,6 @@ class PSPM:
                 unique_cni = set(cni)
                 fes = sum([self.fes_weight(cni.index(x) + 1) for x in unique_cni]) / len(items)
 
-                # TODO: why can there be invalid value in double_scalars warning???
                 self.competence.append(0 if bcs == 0 or fes == 0 else (bcs * fes) / (1 / 2 * (bcs + fes)))
 
             # mine patterns

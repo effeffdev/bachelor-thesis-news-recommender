@@ -73,7 +73,6 @@ met5 = Metrics(5)
 #         # predictions = fossil.predict(session, last_item)
 #         predictions = pspm.predict(session, last_item, all_items)
 #
-#         # TODO: cleanup necessary?
 #         predictions[np.isnan(predictions)] = 0
 #         predictions.sort_values(ascending=False, inplace=True)
 #
@@ -111,7 +110,6 @@ for i in range(test_length):
                 # predictions = fossil.predict_session(session_items)
                 # predictions = pspm.predict_session(session_items, all_items)
 
-                # TODO: cleanup necessary?
                 predictions[np.isnan(predictions)] = 0
                 predictions.sort_values(ascending=False, inplace=True)
 
